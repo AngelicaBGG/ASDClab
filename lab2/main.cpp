@@ -13,7 +13,7 @@ enum class NivelStudii {
 };
 
 struct Student {
-    int anul;
+    int id;
     std::string specialitatea;
     NivelStudii nivelStudii;
 };
@@ -43,7 +43,7 @@ void serializeNivelStudii(std::ostream& out, NivelStudii nivel) {
 }
 
 void serializeStudent(std::ostream& out, const Student& student) {
-    serializeInt(out, student.anul);
+    serializeInt(out, student.id);
     out << ",";
     serializeString(out, student.specialitatea);
     out << ",";
@@ -59,14 +59,14 @@ bool deserializeStudent(std::istream& in, Student& student) {
 
     std::istringstream lineStream(line);
 
-    std::string anulStr, nivelStr;
-    if (!std::getline(lineStream, anulStr, ',') ||
+    std::string idStr, nivelStr;
+    if (!std::getline(lineStream, idStr, ',') ||
         !std::getline(lineStream, student.specialitatea, ',') ||
         !std::getline(lineStream, nivelStr, ',')) {
         return false;
     }
 
-    student.anul = std::stoi(anulStr);
+    student.id = std::stoi(idStr);
     if (nivelStr == "Licenta") student.nivelStudii = NivelStudii::Licenta;
     else if (nivelStr == "Masterat") student.nivelStudii = NivelStudii::Masterat;
     else return false;
@@ -98,16 +98,16 @@ public:
     {
         this->date = date;
     }
-    Student Cautarea_Binara_dupa_an(int an)
+    Student Cautarea_Binara_dupa_id(int an)
     {
-       std::cout << "\nCautarea Binara dupa an\n";
+       std::cout << "\nCautarea Binara dupa id\n";
                
        int Limita_Stanga = 0;
        int Limita_Dreapta = date.size() - 1;
        while(Limita_Stanga <= Limita_Dreapta)
        {
            int Centru = Limita_Stanga + (Limita_Dreapta - Limita_Stanga) / 2;
-           int anCentru = date[Centru].anul;
+           int anCentru = date[Centru].id;
            if(anCentru == an) {
                return date[Centru]; // Возвращаем найденного студента
            }
@@ -121,7 +121,7 @@ public:
         
         return date[0];
     }
-    Student Cautarea_in_Metoda_lui_Fibonacci_dupa_an(int an)
+    Student Cautarea_in_Metoda_lui_Fibonacci_dupa_id(int id)
     {
         cout << "\nCautarea in Metoda lui Fibonacci dupa ID\n";
         int Lun = date.size();
@@ -138,14 +138,14 @@ public:
         while(Fib > 1)
         {
             int i = (Ech+Fib2 < Lun-1) ? Ech+Fib2 : Lun-1;
-            if(date[i].anul < an)
+            if(date[i].id < id)
             {
                 Fib = Fib1;
                 Fib1 = Fib2;
                 Fib2 = Fib-Fib1;
                 Ech = i;
             }
-            else if(date[i].anul > an)
+            else if(date[i].id > id)
             {
                 Fib = Fib2;
                 Fib1 = Fib1-Fib2;
@@ -153,25 +153,25 @@ public:
             }
             else return date[i];
         }
-        if(Fib1 && date[Ech+1].anul == an) return date[Ech+1];
+        if(Fib1 && date[Ech+1].id == id) return date[Ech+1];
         return date[0];
     }
-    Student Metoda_Secventiala_de_Cautare_dupa_An(int An)
+    Student Metoda_Secventiala_de_Cautare_dupa_id(int id)
     {
-        cout << "\nMetoda Secventiala de Cautare dupa An\n";
+        cout << "\nMetoda Secventiala de Cautare dupa id\n";
         for(Student El:date)
         {
-            if(El.anul == An) return El;
+            if(El.id == id) return El;
         }
         return date[0];
     }
-    Student static Cautarea_in_Arborele_Binar_de_Cautare(Nod *Varf, int An)
+    Student static Cautarea_in_Arborele_Binar_de_Cautare(Nod *Varf, int id)
     {
         while(true)
         {
-            int Va1 = Varf->Date.anul;
-            if(Va1 == An) return Varf->Date;
-            else if(Va1 > An) Varf = Varf->min;
+            int Va1 = Varf->Date.id;
+            if(Va1 == id) return Varf->Date;
+            else if(Va1 > id) Varf = Varf->min;
             else Varf = Varf->max;
         }
     }
@@ -199,7 +199,7 @@ public:
             Student Va1 = Date[i];
             while(true)
             {
-                if(LM->Date.anul < Va1.anul)
+                if(LM->Date.id < Va1.id)
                 {
                     if(LM->max == NULL)
                     {
@@ -240,7 +240,7 @@ void print_Antet()
 }
 
 void print(Student student){
-    std::cout << "Anul: " << student.anul << ", Specialitatea: " << student.specialitatea << ", Nivelul de studii: ";
+    std::cout << "Id-ul: " << student.id << ", Specialitatea: " << student.specialitatea << ", Nivelul de studii: ";
     serializeNivelStudii(std::cout, student.nivelStudii);
     std::cout << std::endl;
 }
@@ -255,20 +255,20 @@ int main() {
 //    serializeStudents(outFile, students);
 //    outFile.close();
 
-    std::ifstream inFile("students.csv");
+    std::ifstream inFile("students-shuffled-data.csv");
     std::vector<Student> deserializedStudents = deserializeStudents(inFile);
     inFile.close();
-    for (const auto& student : deserializedStudents) {
-        std::cout << "Anul: " << student.anul << ", Specialitatea: " << student.specialitatea << ", Nivelul de studii: ";
-        serializeNivelStudii(std::cout, student.nivelStudii);
-        std::cout << std::endl;
-    }
+    // for (const auto& student : deserializedStudents) {
+    //     std::cout << "Id-ul: " << student.id << ", Specialitatea: " << student.specialitatea << ", Nivelul de studii: ";
+    //     serializeNivelStudii(std::cout, student.nivelStudii);
+    //     std::cout << std::endl;
+    // }
     
     Cautare search(deserializedStudents);
     
     auto start = std::chrono::high_resolution_clock::now();
     
-    print(search.Metoda_Secventiala_de_Cautare_dupa_An(2));
+    print(search.Metoda_Secventiala_de_Cautare_dupa_id(2));
     
     auto end = std::chrono::high_resolution_clock::now();
     std::chrono::duration<double, std::milli> elapsed = end - start;
@@ -289,7 +289,7 @@ int main() {
     
     auto start2 = std::chrono::high_resolution_clock::now();
     
-    print(search.Cautarea_Binara_dupa_an(2));
+    print(search.Cautarea_Binara_dupa_id(2));
     
     auto end2 = std::chrono::high_resolution_clock::now();
     std::chrono::duration<double, std::milli> elapsed2 = end2 - start2;
@@ -297,7 +297,7 @@ int main() {
     
     auto start3 = std::chrono::high_resolution_clock::now();
     
-    print(search.Cautarea_in_Metoda_lui_Fibonacci_dupa_an(2));
+    print(search.Cautarea_in_Metoda_lui_Fibonacci_dupa_id(2));
 
     auto end3 = std::chrono::high_resolution_clock::now();
     std::chrono::duration<double, std::milli> elapsed3 = end3 - start3;
