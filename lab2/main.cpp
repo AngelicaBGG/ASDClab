@@ -98,30 +98,31 @@ public:
     {
         this->date = date;
     }
-    Student Cautarea_Binara_dupa_id(int an)
+    Student* Cautarea_Binara_dupa_id(int an)
     {
-       std::cout << "\nCautarea Binara dupa id\n";
-               
-       int Limita_Stanga = 0;
-       int Limita_Dreapta = date.size() - 1;
-       while(Limita_Stanga <= Limita_Dreapta)
-       {
-           int Centru = Limita_Stanga + (Limita_Dreapta - Limita_Stanga) / 2;
-           int anCentru = date[Centru].id;
-           if(anCentru == an) {
-               return date[Centru]; // Возвращаем найденного студента
-           }
-           else if(anCentru < an) {
-               Limita_Stanga = Centru + 1;
-           }
-           else {
-               Limita_Dreapta = Centru - 1;
-           }
-       }
-        
-        return date[0];
+    std::cout << "\nCautarea Binara dupa id\n";
+            
+    int Limita_Stanga = 0;
+    int Limita_Dreapta = date.size() - 1;
+    while(Limita_Stanga <= Limita_Dreapta)
+    {
+        int Centru = Limita_Stanga + (Limita_Dreapta - Limita_Stanga) / 2;
+        int anCentru = date[Centru].id;
+
+        if(anCentru == an) {
+            return &date[Centru]; // Return a pointer to the found student
+        }
+        else if(anCentru < an) {
+            Limita_Stanga = Centru + 1;
+        }
+        else {
+            Limita_Dreapta = Centru - 1;
+        }
     }
-    Student Cautarea_in_Metoda_lui_Fibonacci_dupa_id(int id)
+        
+        return nullptr; // Return nullptr if not found
+    }
+    Student* Cautarea_in_Metoda_lui_Fibonacci_dupa_id(int id)
     {
         cout << "\nCautarea in Metoda lui Fibonacci dupa ID\n";
         int Lun = date.size();
@@ -151,10 +152,10 @@ public:
                 Fib1 = Fib1-Fib2;
                 Fib2 = Fib-Fib1;
             }
-            else return date[i];
+            else return &date[i];
         }
-        if(Fib1 && date[Ech+1].id == id) return date[Ech+1];
-        return date[0];
+        if(Fib1 && date[Ech+1].id == id) return &date[Ech+1];
+        return nullptr;
     }
     Student Metoda_Secventiala_de_Cautare_dupa_id(int id)
     {
@@ -246,25 +247,11 @@ void print(Student student){
 }
 
 int main() {
-//    std::vector<Student> students = {
-//        {1, "Informatica", NivelStudii::Licenta},
-//        {2, "Matematica", NivelStudii::Masterat}
-//    };
-//
-//    std::ofstream outFile("students.csv");
-//    serializeStudents(outFile, students);
-//    outFile.close();
-
     std::ifstream inFile("students-shuffled-data.csv");
-    std::vector<Student> deserializedStudents = deserializeStudents(inFile);
+    std::vector<Student> notSortedStudents = deserializeStudents(inFile);
     inFile.close();
-    // for (const auto& student : deserializedStudents) {
-    //     std::cout << "Id-ul: " << student.id << ", Specialitatea: " << student.specialitatea << ", Nivelul de studii: ";
-    //     serializeNivelStudii(std::cout, student.nivelStudii);
-    //     std::cout << std::endl;
-    // }
     
-    Cautare search(deserializedStudents);
+    Cautare search(notSortedStudents);
     
     auto start = std::chrono::high_resolution_clock::now();
     
@@ -278,7 +265,7 @@ int main() {
     cout << "Arborele binar" << endl;
     auto start1 = std::chrono::high_resolution_clock::now();
     
-    Arbore Cautarea_in_Arborele_Binar_de_Cautare(deserializedStudents);
+    Arbore Cautarea_in_Arborele_Binar_de_Cautare(notSortedStudents);
     Nod *Varf = Cautarea_in_Arborele_Binar_de_Cautare.Obtine_Nod();
     
     print(Cautare::Cautarea_in_Arborele_Binar_de_Cautare(Varf, 2));
@@ -287,21 +274,33 @@ int main() {
     std::chrono::duration<double, std::milli> elapsed1 = end1 - start1;
     std::cout << "\nCautarea Arborele binar timp: " << elapsed1.count() << " ms\n";
     
-    auto start2 = std::chrono::high_resolution_clock::now();
-    
-    print(search.Cautarea_Binara_dupa_id(2));
-    
-    auto end2 = std::chrono::high_resolution_clock::now();
-    std::chrono::duration<double, std::milli> elapsed2 = end2 - start2;
-    std::cout << "\nCautarea binara timp: " << elapsed2.count() << " ms\n";
-    
-    auto start3 = std::chrono::high_resolution_clock::now();
-    
-    print(search.Cautarea_in_Metoda_lui_Fibonacci_dupa_id(2));
+    //// sorted
+    std::ifstream inFileSorted("students_sorted_data.csv");
+    std::vector<Student> sortedStudents = deserializeStudents(inFileSorted);
+    inFileSorted.close();
 
-    auto end3 = std::chrono::high_resolution_clock::now();
-    std::chrono::duration<double, std::milli> elapsed3 = end3 - start3;
-    std::cout << "\nCautarea binara timp: " << elapsed3.count() << " ms\n";
+    Cautare searchSorted(sortedStudents);
+    
+    Student* result = searchSorted.Cautarea_Binara_dupa_id(2);
+
+    if (result != nullptr) {
+        // If the student is found, print details
+        std::cout << "Student found: ID = " << result->id << std::endl;
+    } else {
+        // If not found, print a message
+        std::cout << "No student found with ID " << 2 << "." << std::endl;
+    }
+    
+
+    Student* newResult = searchSorted.Cautarea_in_Metoda_lui_Fibonacci_dupa_id(2);
+
+    if (newResult != nullptr) {
+        // If the student is found, print details
+        std::cout << "Student found: ID = " << newResult->id << std::endl;
+    } else {
+        // If not found, print a message
+        std::cout << "No student found with ID " << 2 << "." << std::endl;
+    }
 
     return 0;
 }
