@@ -157,14 +157,14 @@ public:
         if(Fib1 && date[Ech+1].id == id) return &date[Ech+1];
         return nullptr;
     }
-    Student Metoda_Secventiala_de_Cautare_dupa_id(int id)
+    Student* Metoda_Secventiala_de_Cautare_dupa_id(int id)
     {
         cout << "\nMetoda Secventiala de Cautare dupa id\n";
         for(Student El:date)
         {
-            if(El.id == id) return El;
+            if(El.id == id) return &El;
         }
-        return date[0];
+        return nullptr;
     }
     Student static Cautarea_in_Arborele_Binar_de_Cautare(Nod *Varf, int id)
     {
@@ -255,7 +255,15 @@ int main() {
     
     auto start = std::chrono::high_resolution_clock::now();
     
-    print(search.Metoda_Secventiala_de_Cautare_dupa_id(2));
+    Student* res = search.Metoda_Secventiala_de_Cautare_dupa_id(2);
+
+    if (res != nullptr) {
+        // If the student is found, print details
+        std::cout << "Student found: ID = " << res->id << std::endl;
+    } else {
+        // If not found, print a message
+        std::cout << "No student found with ID " << 2 << "." << std::endl;
+    }
     
     auto end = std::chrono::high_resolution_clock::now();
     std::chrono::duration<double, std::milli> elapsed = end - start;
