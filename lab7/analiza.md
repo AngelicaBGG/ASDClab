@@ -1,6 +1,6 @@
 # Analiza Algoritmilor de Sortare
 
-Acest document prezintă o analiză cuprinzătoare a diferiților algoritmi de sortare în ceea ce privește complexitatea lor timpului și spațiului, performanța cu diferite aranjamente de date și implicațiile practice generale.
+Acest document prezintă o analiză cuprinzătoare a diferitor algoritmi de sortare în ceea ce privește complexitatea lor in timp și spatiu, performanța cu diferite aranjamente de date.
 
 ## 1. Complexitatea Teoretică
 
@@ -23,65 +23,65 @@ Acest document prezintă o analiză cuprinzătoare a diferiților algoritmi de s
 ## 2. Complexitatea Practică
 
 ### Sortat 1000 rows
-Testing Bubble Sort:
+- Testing Bubble Sort:
 Time: 0ms, Comparisons: 999, Swaps: 0
-Testing Insertion Sort:
+- Testing Insertion Sort:
 Time: 0ms, Comparisons: 0, Swaps: 0
-Testing Quick Sort:
+- Testing Quick Sort:
 Time: 184ms, Comparisons: 499500, Swaps: 500499
-Testing Merge Sort:
+- Testing Merge Sort:
 Time: 5ms, Comparisons: 5044, Swaps: 9976
 
 ### Inversat 1000 rows
-Testing Bubble Sort:
+- Testing Bubble Sort:
 Time: 210ms, Comparisons: 999000, Swaps: 499500
-Testing Insertion Sort:
+- Testing Insertion Sort:
 Time: 72ms, Comparisons: 499500, Swaps: 500499
-Testing Quick Sort:
+- Testing Quick Sort:
 Time: 107ms, Comparisons: 499500, Swaps: 250499
-Testing Merge Sort:
+- Testing Merge Sort:
 Time: 3ms, Comparisons: 4932, Swaps: 9976
 
 ### Amesticat 1000 rows
-Testing Bubble Sort:
+- Testing Bubble Sort:
 Time: 110ms, Comparisons: 953046, Swaps: 246106
-Testing Insertion Sort:
+- Testing Insertion Sort:
 Time: 26ms, Comparisons: 246106, Swaps: 247092
-Testing Quick Sort:
+- Testing Quick Sort:
 Time: 3ms, Comparisons: 10284, Swaps: 5617
-Testing Merge Sort:
+- Testing Merge Sort:
 Time: 6ms, Comparisons: 8680, Swaps: 9976
 
 ----------------------------------------------
 
 ### Sortat 100 rows
-Testing Bubble Sort:
+- Testing Bubble Sort:
 Time: 0ms, Comparisons: 99, Swaps: 0
-Testing Insertion Sort:
+- Testing Insertion Sort:
 Time: 0ms, Comparisons: 0, Swaps: 0
-Testing Quick Sort:
+- Testing Quick Sort:
 Time: 2ms, Comparisons: 4950, Swaps: 5049
-Testing Merge Sort:
+- Testing Merge Sort:
 Time: 0ms, Comparisons: 356, Swaps: 672
 
 ### Inversat 100 rows
-Testing Bubble Sort:
+- Testing Bubble Sort:
 Time: 1ms, Comparisons: 9900, Swaps: 4950
-Testing Insertion Sort:
+- Testing Insertion Sort:
 Time: 0ms, Comparisons: 4950, Swaps: 5049
-Testing Quick Sort:
+- Testing Quick Sort:
 Time: 1ms, Comparisons: 4950, Swaps: 2549
-Testing Merge Sort:
+- Testing Merge Sort:
 Time: 0ms, Comparisons: 316, Swaps: 672
 
 ### Amesticat 100 rows
-Testing Bubble Sort:
+- Testing Bubble Sort:
 Time: 0ms, Comparisons: 8712, Swaps: 2384
-Testing Insertion Sort:
+- Testing Insertion Sort:
 Time: 0ms, Comparisons: 2384, Swaps: 2476
-Testing Quick Sort:
+- Testing Quick Sort:
 Time: 0ms, Comparisons: 541, Swaps: 338
-Testing Merge Sort:
+- Testing Merge Sort:
 Time: 0ms, Comparisons: 557, Swaps: 672
 
 
