@@ -1,3 +1,4 @@
+#include "student_types.h"
 #include <iostream>
 #include <vector>
 #include <chrono>
@@ -5,16 +6,7 @@
 #include <string>
 #include <sstream>
 
-enum class NivelStudii {
-    Licenta,
-    Masterat
-};
-
-struct Student {
-    int id;
-    std::string specialitatea;
-    NivelStudii nivelStudii;
-};
+using namespace std;
 
 struct SortMetrics {
     std::chrono::milliseconds duration;
@@ -158,42 +150,9 @@ protected:
     }
 };
 
-bool deserializeStudent(std::istream& in, Student& student) {
-    std::string line;
-    if (!std::getline(in, line)) {
-        return false;
-    }
-
-    std::istringstream lineStream(line);
-
-    std::string idStr, nivelStr;
-    if (!std::getline(lineStream, idStr, ',') ||
-        !std::getline(lineStream, student.specialitatea, ',') ||
-        !std::getline(lineStream, nivelStr, ',')) {
-        return false;
-    }
-
-    student.id = std::stoi(idStr);
-    if (nivelStr == "Licenta") student.nivelStudii = NivelStudii::Licenta;
-    else if (nivelStr == "Masterat") student.nivelStudii = NivelStudii::Masterat;
-    else return false;
-
-    return true;
-}
-
-
-std::vector<Student> deserializeStudents(std::istream& in) {
-    std::vector<Student> students;
-    Student student;
-    while (deserializeStudent(in, student)) {
-        students.push_back(student);
-    }
-    return students;
-}
-
 
 int main() {
-    std::ifstream inFile("students-shuffled-data.csv");
+    std::ifstream inFile("lab7/students-shuffled-data.csv");
     if (!inFile.is_open()) {
         std::cerr << "Failed to open the file." << std::endl;
         return 1;
