@@ -28,54 +28,77 @@ void printMetrics(const SortMetrics& metrics) {
               << "Swaps: " << metrics.swaps << std::endl;
 }
 
-SortMetrics bubbleSort(std::vector<Student>& arr) {
-    using namespace std::chrono;
-    auto start = high_resolution_clock::now();
-    SortMetrics metrics;
+class SortingAlgorithm {
+public:
+    virtual ~SortingAlgorithm() {}
 
-    bool swapped;
-    do {
-        swapped = false;
-        for (size_t i = 1; i < arr.size(); i++) {
-            metrics.comparisons++;
-            if (arr[i - 1].id > arr[i].id) {
-                std::swap(arr[i - 1], arr[i]);
-                metrics.swaps++;
-                swapped = true;
-            }
-        }
-    } while (swapped);
-
-    auto end = high_resolution_clock::now();
-    metrics.duration = duration_cast<milliseconds>(end - start);
-    return metrics;
-}
-
-SortMetrics insertionSort(std::vector<Student>& arr) {
-    using namespace std::chrono;
-    auto start = high_resolution_clock::now();
-    SortMetrics metrics;
-
-    for (size_t i = 1; i < arr.size(); i++) {
-        Student key = arr[i];
-        size_t j = i;
-        while (j > 0 && arr[j - 1].id > key.id) {
-            metrics.comparisons++;
-            arr[j] = arr[j - 1];
-            metrics.swaps++;
-            j--;
-        }
-        arr[j] = key;
-        if (j != i) metrics.swaps++;
+    // Template method that executes the sort and measures time.
+    SortMetrics sort(std::vector<Student>& data) {
+        auto start = std::chrono::high_resolution_clock::now();
+        executeSort(data);
+        auto end = std::chrono::high_resolution_clock::now();
+        metrics.duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
+        return metrics;
     }
 
-    auto end = high_resolution_clock::now();
-    metrics.duration = duration_cast<milliseconds>(end - start);
-    return metrics;
-}
+protected:
+    virtual void executeSort(std::vector<Student>& data) = 0;
+    SortMetrics metrics;
+};
 
-void quickSortHelper(std::vector<Student>& arr, int low, int high, SortMetrics& metrics) {
-    if (low < high) {
+
+
+class BubbleSort : public SortingAlgorithm {
+protected:
+    void executeSort(std::vector<Student>& data) override {
+        bool swapped;
+        do {
+            swapped = false;
+            for (size_t i = 1; i < data.size(); i++) {
+                metrics.comparisons++;
+                if (data[i - 1].id > data[i].id) {
+                    std::swap(data[i - 1], data[i]);
+                    metrics.swaps++;
+                    swapped = true;
+                }
+            }
+        } while (swapped);
+    }
+};
+
+class InsertionSort : public SortingAlgorithm {
+protected:
+    void executeSort(std::vector<Student>& data) override {
+        for (size_t i = 1; i < data.size(); i++) {
+            Student key = data[i];
+            size_t j = i;
+            while (j > 0 && data[j - 1].id > key.id) {
+                metrics.comparisons++;
+                data[j] = data[j - 1];
+                metrics.swaps++;
+                j--;
+            }
+            data[j] = key;
+        }
+    }
+};
+
+
+class QuickSort : public SortingAlgorithm {
+protected:
+    void executeSort(std::vector<Student>& data) override {
+        quickSortHelper(data, 0, data.size() - 1);
+    }
+
+    void quickSortHelper(std::vector<Student>& arr, int low, int high) {
+        if (low < high) {
+            int pivotIndex = partition(arr, low, high);
+            quickSortHelper(arr, low, pivotIndex - 1);
+            quickSortHelper(arr, pivotIndex + 1, high);
+        }
+    }
+
+    int partition(std::vector<Student>& arr, int low, int high) {
         Student pivot = arr[high];
         int i = low - 1;
         for (int j = low; j < high; j++) {
@@ -88,71 +111,52 @@ void quickSortHelper(std::vector<Student>& arr, int low, int high, SortMetrics& 
         }
         std::swap(arr[i + 1], arr[high]);
         metrics.swaps++;
-        quickSortHelper(arr, low, i, metrics);
-        quickSortHelper(arr, i + 2, high, metrics);
+        return i + 1;
     }
-}
+};
 
-SortMetrics quickSort(std::vector<Student>& arr) {
-    using namespace std::chrono;
-    auto start = high_resolution_clock::now();
-    SortMetrics metrics;
+class MergeSort : public SortingAlgorithm {
+protected:
+    void executeSort(std::vector<Student>& data) override {
+        mergeSortHelper(data, 0, data.size() - 1);
+    }
 
-    quickSortHelper(arr, 0, arr.size() - 1, metrics);
-
-    auto end = high_resolution_clock::now();
-    metrics.duration = duration_cast<milliseconds>(end - start);
-    return metrics;
-}
-
-void merge(std::vector<Student>& arr, int left, int mid, int right, SortMetrics& metrics) {
-    int n1 = mid - left + 1;
-    int n2 = right - mid;
-
-    std::vector<Student> L(arr.begin() + left, arr.begin() + left + n1);
-    std::vector<Student> R(arr.begin() + mid + 1, arr.begin() + mid + 1 + n2);
-
-    int i = 0, j = 0, k = left;
-    while (i < n1 && j < n2) {
-        metrics.comparisons++;
-        if (L[i].id <= R[j].id) {
-            arr[k++] = L[i++];
-        } else {
-            arr[k++] = R[j++];
+    void mergeSortHelper(std::vector<Student>& arr, int left, int right) {
+        if (left < right) {
+            int mid = left + (right - left) / 2;
+            mergeSortHelper(arr, left, mid);
+            mergeSortHelper(arr, mid + 1, right);
+            merge(arr, left, mid, right);
         }
-        metrics.swaps++;
     }
 
-    while (i < n1) {
-        arr[k++] = L[i++];
-        metrics.swaps++;
+    void merge(std::vector<Student>& arr, int left, int mid, int right) {
+        int n1 = mid - left + 1;
+        int n2 = right - mid;
+        std::vector<Student> L(arr.begin() + left, arr.begin() + left + n1);
+        std::vector<Student> R(arr.begin() + mid + 1, arr.begin() + mid + 1 + n2);
+        int i = 0, j = 0, k = left;
+        while (i < n1 && j < n2) {
+            metrics.comparisons++;
+            if (L[i].id <= R[j].id) {
+                arr[k++] = L[i++];
+            } else {
+                arr[k++] = R[j++];
+            }
+            metrics.swaps++;
+        }
+
+        while (i < n1) {
+            arr[k++] = L[i++];
+            metrics.swaps++;
+        }
+
+        while (j < n2) {
+            arr[k++] = R[j++];
+            metrics.swaps++;
+        }
     }
-
-    while (j < n2) {
-        arr[k++] = R[j++];
-        metrics.swaps++;
-    }
-}
-
-void mergeSortHelper(std::vector<Student>& arr, int left, int right, SortMetrics& metrics) {
-    if (left < right) {
-        int mid = left + (right - left) / 2;
-        mergeSortHelper(arr, left, mid, metrics);
-        mergeSortHelper(arr, mid + 1, right, metrics);
-        merge(arr, left, mid, right, metrics);
-    }
-}
-
-SortMetrics mergeSort(std::vector<Student>& arr) {
-    using namespace std::chrono;
-    auto start = high_resolution_clock::now();
-    SortMetrics metrics;
-
-    mergeSortHelper(arr, 0, arr.size() - 1, metrics);
-    auto end = high_resolution_clock::now();
-    metrics.duration = duration_cast<milliseconds>(end - start);
-    return metrics;
-}
+};
 
 bool deserializeStudent(std::istream& in, Student& student) {
     std::string line;
@@ -205,29 +209,15 @@ int main() {
 
     std::vector<Student> students = deserializedStudents;
 
-    // Bubble Sort
-    std::cout << "Testing Bubble Sort:" << std::endl;
-    students = deserializedStudents; // Reset to original data
-    SortMetrics bubbleMetrics = bubbleSort(students);
-    printMetrics(bubbleMetrics);
+    BubbleSort bubbleSort;
+    InsertionSort insertionSort;
+    QuickSort quickSort;
+    MergeSort mergeSort;
 
-    // Insertion Sort
-    std::cout << "Testing Insertion Sort:" << std::endl;
-    students = deserializedStudents; // Reset to original data
-    SortMetrics insertionMetrics = insertionSort(students);
-    printMetrics(insertionMetrics);
-
-    // Quick Sort
-    std::cout << "Testing Quick Sort:" << std::endl;
-    students = deserializedStudents; // Reset to original data
-    SortMetrics quickMetrics = quickSort(students);
-    printMetrics(quickMetrics);
-
-    // Merge Sort
-    std::cout << "Testing Merge Sort:" << std::endl;
-    students = deserializedStudents; // Reset to original data
-    SortMetrics mergeMetrics = mergeSort(students);
-    printMetrics(mergeMetrics);
+    printMetrics(bubbleSort.sort(students));
+    printMetrics(insertionSort.sort(students));
+    printMetrics(quickSort.sort(students));
+    printMetrics(mergeSort.sort(students));
 
     return 0;
 }
